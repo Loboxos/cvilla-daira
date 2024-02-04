@@ -1,2 +1,1 @@
-# cvilla-daira
-Calculadora basica go-svelte
+# Calculadora basica go-svelte
