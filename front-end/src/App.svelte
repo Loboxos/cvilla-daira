@@ -1,7 +1,65 @@
 <script>
 	import Keypad from "./keypad.svelte";
-	let entrada = ""
-	let total = 0
+	let entrada = "";
+	let entrada2 ="";
+	let operandoActual = ""; 
+	let operacion ="";
+	let b=0;
+	let total = 0;
+
+	function agregarDigito(digito) {
+		console.log(digito)
+    if (entrada.length < 2) {
+      entrada += digito;
+	  console.log(entrada)
+    }
+	if (b === 1){
+		if (entrada2.length < 2) {
+			entrada2 += 1;
+            entrada += digito;
+	}
+  }
+}
+  function agregarOperador(operador) {
+    entrada+=operador;
+	b=1;
+    console.log(entrada);
+    operacion = operador;
+}
+
+  async function realizarCalculo(){
+	console.log(entrada)
+	console.log(operacion)
+	let operandos = entrada.split(operacion);
+	let ope1=operandos[0];
+	let ope2=operandos[1];
+
+	if (ope1 !== "" && ope2 !== "" && operacion !== ""){
+	const data = {
+		op1: parseInt(ope1),
+        op2: parseInt(ope2),
+        op: operacion,
+	}
+	console.log(data)
+  try {
+        const response = await fetch('http://localhost:8000/calcular', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+		if (response.ok) {
+          const result = await response.json();
+          total = result.res;
+          entrada = total.toString(); // Actualiza la entrada con el resultado
+        } else {
+          console.error('Error en la solicitud:', response.statusText);
+        }
+} catch (error) {
+        console.error('Error en la solicitud:', error.message);
+      }}}
+
 </script>
 
 <main>
@@ -11,31 +69,30 @@
 		<span>{entrada}</span>
 	</div>
 <div class="input-pad">
+	<Keypad tipoBoton ="borrar" on:click={() => entrada = ""}>C</Keypad>
+	<Keypad tipoBoton ="borrar" on:click={() => { entrada = ""; operandoActual = ""; operacion = ""; total = 0; }}>CE</Keypad>
+	<Keypad tamanio={2} tipoBoton ="historial" on:click={() => alert("No implementado")}>Hist</Keypad>
 
-	<Keypad tipoBoton ="borrar">C</Keypad>
-	<Keypad tipoBoton ="borrar">CE</Keypad>
-	<Keypad tamanio={2} tipoBoton ="historial">Hist</Keypad>
+<Keypad clicked={() => agregarDigito(7)}>7</Keypad>
+<Keypad clicked={() => agregarDigito(8)}>8</Keypad>
+<Keypad clicked={() => agregarDigito(9)}>9</Keypad>
+<Keypad clicked={() => agregarOperador("/")}>/</Keypad>
 
-	<Keypad>7</Keypad>
-	<Keypad>8</Keypad>
-	<Keypad>9</Keypad>
-	<Keypad tipoBoton ="operador">/</Keypad>
-
-	<Keypad>4</Keypad>
-	<Keypad>5</Keypad>
-	<Keypad>6</Keypad>
-	<Keypad tipoBoton ="operador">*</Keypad>
+	<Keypad clicked={() => agregarDigito(4)}>4</Keypad>
+<Keypad clicked={() => agregarDigito(5)}>5</Keypad>
+<Keypad clicked={() => agregarDigito(6)}>6</Keypad>
+<Keypad clicked={() => agregarOperador("*")}>*</Keypad>
 
 
-	<Keypad>1</Keypad>
-	<Keypad>2</Keypad>
-	<Keypad>3</Keypad>
-	<Keypad tipoBoton ="operador">-</Keypad>
+	<Keypad clicked={() => agregarDigito(1)}>1</Keypad>
+<Keypad clicked={() => agregarDigito(2)}>2</Keypad>
+<Keypad clicked={() => agregarDigito(3)}>3</Keypad>
+<Keypad clicked={() => agregarOperador("-")}>-</Keypad>
 
 	<Keypad>0</Keypad>
 	<Keypad>.</Keypad>
-	<Keypad tipoBoton ="operador">=</Keypad>
-	<Keypad tipoBoton ="operador">+</Keypad>
+	<Keypad clicked={realizarCalculo} tipoBoton ="operador">=</Keypad>
+	<Keypad clicked={() => agregarOperador("+")} tipoBoton ="operador">+</Keypad>
 	
 </div>
 	
