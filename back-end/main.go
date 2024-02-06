@@ -1,30 +1,59 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Operacion struct {
-	Op1 int
-	Op2 int
-	Op  string
-	Res int
+	Op1 int    `json:"op1"`
+	Op2 int    `json:"op2"`
+	Op  string `json:"op"`
+	Res int    `json:"res"`
 }
 
 func main() {
 	fmt.Println("Hola back-end")
+	router := mux.NewRouter()
 
-	op := Operacion{Op1: 100, Op2: 15, Op: "+"}
-	calculadora(&op)
-	fmt.Println(op.Res)
+	router.HandleFunc("/calcular", calculadoraHandler).Methods("POST")
+	router.HandleFunc("/inicio", inicioHand).Methods("GET")
+
+	//router.PathPrefix("/").Handler(http.FileServer(http.Dir("../front-end/public")))
+
+	http.Handle("/", router)
+	http.ListenAndServe(":8000", nil)
+
+	//op := Operacion{Op1: 100, Op2: 15, Op: "+"}
+	//calculadora(&op)
+	//fmt.Println(op.Res)
 }
-
-func calculadora(op *Operacion) {
-
-	if !validarRango(op.Op1) || !validarRango(op.Op2) {
-		fmt.Println("Los operandos son numeros de mas de 2 digitos")
+func inicioHand(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Hola desde el back")
+}
+func calculadoraHandler(w http.ResponseWriter, r *http.Request) {
+	//io.WriteString(w, "Hola mundo")
+	var op Operacion
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&op)
+	if err != nil {
+		http.Error(w, "Error al decodificar la solicitud JSON", http.StatusBadRequest)
 		return
 	}
+	if !validarRango(op.Op1) || !validarRango(op.Op2) {
+		http.Error(w, "Los operandos son números de más de 2 dígitos", http.StatusBadRequest)
+		return
+	}
+	calculadora(&op)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(op)
+
+}
+func calculadora(op *Operacion) {
 
 	switch op.Op {
 	case "+":

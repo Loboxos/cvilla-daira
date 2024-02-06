@@ -1,6 +1,10 @@
 <script>
  export let tamanio = 1;
  export let tipoBoton = 'numero';
+ export let clicked = () => {
+    console.log("click");
+ };
+ 
 function getColor (){
     switch (tipoBoton){
         case "numero":
@@ -15,8 +19,11 @@ function getColor (){
          return "#fff";
     }
 }
+function handleClick() {
+		clicked();
+	}
 </script>
-<button class = "key-pad" style="grid-column:span {tamanio};background-color:{getColor()}; color:white">
+<button class = "key-pad" style="grid-column:span {tamanio};background-color:{getColor()}; color:white" on:click={handleClick}>
 <slot></slot>
 </button>
 
