@@ -6,6 +6,7 @@
 	let b=0;
     let total=0;
 	let historial = [];
+
 	function agregarDigito(digito) {
 		console.log(digito)
     if (entrada.length < 2 ) {
@@ -60,7 +61,9 @@
         console.error('Error en la solicitud:', error.message);
       }}}
 	  const borrar = () => {
-		entrada = ""
+		entrada = "";
+		entrada2= "";
+		b=0;
 	}
 	async function obtenerHistorial() {
     try {
