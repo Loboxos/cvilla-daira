@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -76,7 +77,7 @@ func obtenerHistorial(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-func calculadora(op *Operacion) {
+func calculadora(op *Operacion) error {
 
 	switch op.Op {
 	case "+":
@@ -84,12 +85,17 @@ func calculadora(op *Operacion) {
 	case "-":
 		op.Res = op.Op1 - op.Op2
 	case "/":
-		op.Res = op.Op1 / op.Op2
+		if op.Op2 == 0 {
+			return errors.New("division por cero")
+		} else {
+			op.Res = op.Op1 / op.Op2
+		}
 	case "*":
 		op.Res = op.Op1 * op.Op2
 	default:
-		fmt.Println("fin switch")
+		return errors.New("operador no válido")
 	}
+	return nil
 }
 func validarRango(numero int) bool {
 	return numero >= 0 && numero <= 99
