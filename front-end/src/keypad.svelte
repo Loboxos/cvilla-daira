@@ -5,36 +5,24 @@
     console.log("click");
  };
  
-function getColor (){
+ function getColor (){
     switch (tipoBoton){
         case "numero":
-            return "#515050";
+            return "bg-gray-600";
         case "operador":
-            return "#7B7676"
+            return "bg-gray-400";
         case "borrar":
-            return "#EA3B3B"
+            return "bg-red-600";
         case "historial":
-            return "#1F201F"
+            return "bg-black";
         default:
-         return "#fff";
+            return "bg-white";
     }
-}
+  }
 function handleClick() {
 		clicked();
 	}
 </script>
-<button class = "key-pad" style="grid-column:span {tamanio};background-color:{getColor()}; color:white" on:click={handleClick}>
-<slot></slot>
-</button>
-
-<style>
-    .key-pad {
-      border: 1px solid #515050;
-      padding: 22px 20px;
-      margin: 0;
-      font-size: 16px;
-    }
-
-    
-</style>
-
+<button class="key-pad {tamanio === 2 ? 'col-span-2' : ''} {getColor()} text-white py-2 px-4 rounded" on:click={handleClick}>
+    <slot></slot>
+  </button>
